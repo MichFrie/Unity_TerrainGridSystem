@@ -41,6 +41,7 @@ public class Unit : MonoBehaviour
    void Update()
    {
        CalculateMovement();
+       SelectUnit();
    }
 
    void CalculateMovement()
@@ -111,6 +112,33 @@ public class Unit : MonoBehaviour
       {
           moveCounter++;
       }
+   }
+
+   void SelectUnit()
+   {
+       if (Input.GetMouseButtonDown(0))
+       {
+           Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+           RaycastHit hit;
+           if (Physics.Raycast(ray, out hit))
+           {
+               var unitSelected = hit.transform.gameObject.GetComponent<Unit>();
+               unitSelected.selectionState = SELECTIONSTATE.selected;
+           }
+       }
+       else if (Input.GetMouseButtonDown(1))
+       {
+           Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+           RaycastHit hit;
+           if (Physics.Raycast(ray, out hit))
+           {
+               var unitSelected = hit.transform.gameObject.GetComponent<Unit>();
+               if (unitSelected != null)
+               { 
+                   unitSelected.selectionState = SELECTIONSTATE.deselected;
+               }
+           }
+       }
    }
 }
 
