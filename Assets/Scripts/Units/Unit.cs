@@ -15,7 +15,7 @@ public class Unit : MonoBehaviour
    
    TerrainGridSystem tgs;
    
-   public enum MOVEMENTSTATE
+   enum MOVEMENTSTATE
    {
       idle,
       moving,
@@ -42,6 +42,7 @@ public class Unit : MonoBehaviour
    {
        CalculateMovement();
        SelectUnit();
+       DeselectUnit();
    }
 
    void CalculateMovement()
@@ -102,7 +103,7 @@ public class Unit : MonoBehaviour
    //Moves Unit, checks if unit has reached next cell and updates movecounter if not 
    void Move(Vector3 targetPos)
    {
-      float speed = 6;
+      float speed = 10;
       float step = speed * Time.deltaTime;
 
       transform.position = Vector3.MoveTowards(transform.position, targetPos, step);
@@ -122,21 +123,19 @@ public class Unit : MonoBehaviour
            RaycastHit hit;
            if (Physics.Raycast(ray, out hit))
            {
-               var unitSelected = hit.transform.gameObject.GetComponent<Unit>();
-               unitSelected.selectionState = SELECTIONSTATE.selected;
+             Unit unitSelected = hit.transform.GetComponent<Unit>();
+             unitSelected.selectionState = SELECTIONSTATE.selected;
            }
        }
-       else if (Input.GetMouseButtonDown(1))
+   }
+
+   void DeselectUnit()
+   {
+       if (Input.GetMouseButtonDown(1))
        {
-           Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-           RaycastHit hit;
-           if (Physics.Raycast(ray, out hit))
+           foreach (var unit in UnitManager.Instance.playableUnits)
            {
-               var unitSelected = hit.transform.gameObject.GetComponent<Unit>();
-               if (unitSelected != null)
-               { 
-                   unitSelected.selectionState = SELECTIONSTATE.deselected;
-               }
+               unit.selectionState = SELECTIONSTATE.deselected;
            }
        }
    }
