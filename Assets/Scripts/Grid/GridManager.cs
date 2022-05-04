@@ -8,6 +8,8 @@ public class GridManager : MonoBehaviour
 {
     TerrainGridSystem tgs;
     GameObject testUnit;
+
+    public List<Cell> cellList = new List<Cell>();
     void Start()
     {
         tgs = TerrainGridSystem.instance;
@@ -19,6 +21,7 @@ public class GridManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             SnapToCellCenter();
+            GetAllCells();
         }
     }
 
@@ -28,5 +31,11 @@ public class GridManager : MonoBehaviour
         // Shift pos a bit upwards
         pos -= tgs.transform.forward;
         testUnit.transform.position = pos;
+    }
+
+    void GetAllCells()
+    {
+        print("Test");
+        cellList = tgs.cells;
     }
 }

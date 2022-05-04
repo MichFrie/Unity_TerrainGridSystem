@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TGS;
@@ -12,20 +10,19 @@ public class Unit : MonoBehaviour
    float movementPoints = 10;
    short moveCounter;
    List<int> moveList;
-   
    TerrainGridSystem tgs;
    
    enum MOVEMENTSTATE
    {
-      idle,
-      moving,
-      moveSelected
+      Idle,
+      Moving,
+      MoveSelected
    }
 
    enum SELECTIONSTATE
    {
-       selected,
-       deselected
+       Selected,
+       Deselected
    }
    
    MOVEMENTSTATE movementState;
@@ -34,10 +31,10 @@ public class Unit : MonoBehaviour
    void Start()
    {
       tgs = TerrainGridSystem.instance;
-      movementState = MOVEMENTSTATE.moveSelected;
-      selectionState = SELECTIONSTATE.deselected;
-   }
-
+      movementState = MOVEMENTSTATE.MoveSelected;
+      selectionState = SELECTIONSTATE.Deselected;
+  }
+   
    void Update()
    {
        CalculateMovement();
@@ -47,24 +44,26 @@ public class Unit : MonoBehaviour
 
    void CalculateMovement()
     {
+        if(selectionState != SELECTIONSTATE.Selected) return;
+        
         switch (movementState)
         {
-            case MOVEMENTSTATE.idle:
+            case MOVEMENTSTATE.Idle:
                 break;
 
-            case MOVEMENTSTATE.moving:
-                if (moveCounter < moveList.Count && selectionState == SELECTIONSTATE.selected)
+            case MOVEMENTSTATE.Moving:
+                if (moveCounter < moveList.Count)
                 {
                     Move(tgs.CellGetPosition(moveList[moveCounter]));
                 }
                 else
                 {
                     moveCounter = 0;
-                    movementState = MOVEMENTSTATE.moveSelected;
+                    movementState = MOVEMENTSTATE.MoveSelected;
                 }
                 break;
 
-            case MOVEMENTSTATE.moveSelected:
+            case MOVEMENTSTATE.MoveSelected:
                 if (Input.GetMouseButtonUp(0))
                 {   //definition of targetCell
                     int targetCell = tgs.cellHighlightedIndex;
@@ -82,7 +81,7 @@ public class Unit : MonoBehaviour
                         if (movementPoints >= totalCost)
                         {
                             moveCounter = 0;
-                            movementState = MOVEMENTSTATE.moving;
+                            movementState = MOVEMENTSTATE.Moving;
                             movementPoints -= totalCost;
                             Debug.Log("UnitMovementPoints: " + movementPoints);
                             
@@ -124,7 +123,7 @@ public class Unit : MonoBehaviour
            if (Physics.Raycast(ray, out hit))
            {
              Unit unitSelected = hit.transform.GetComponent<Unit>();
-             unitSelected.selectionState = SELECTIONSTATE.selected;
+             unitSelected.selectionState = SELECTIONSTATE.Selected;
            }
        }
    }
@@ -135,7 +134,7 @@ public class Unit : MonoBehaviour
        {
            foreach (var unit in UnitManager.Instance.playableUnits)
            {
-               unit.selectionState = SELECTIONSTATE.deselected;
+               unit.selectionState = SELECTIONSTATE.Deselected;
            }
        }
    }
