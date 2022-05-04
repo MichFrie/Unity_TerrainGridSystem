@@ -7,6 +7,8 @@ public class Unit : MonoBehaviour
 { 
     //Movement Fields
    int startCellIndex;
+   int cellOccupied = 1;
+   
    float movementPoints = 10;
    short moveCounter;
    List<int> moveList;
@@ -40,11 +42,31 @@ public class Unit : MonoBehaviour
        CalculateMovement();
        SelectUnit();
        DeselectUnit();
+
+       if (Input.GetKeyDown(KeyCode.O))
+       {
+           DefineFrontFacing();
+       }
+       if (Input.GetKeyDown(KeyCode.Q))
+       {
+           RotateLeft();
+       }
+
+       if (Input.GetKeyDown(KeyCode.E))
+       {
+           RotateRight();
+       }
+
+       if (Input.GetKeyDown(KeyCode.F))
+       {
+           FindOccupiedCells();
+       }
    }
 
    void CalculateMovement()
     {
-        if(selectionState != SELECTIONSTATE.Selected) return;
+        if(selectionState != SELECTIONSTATE.Selected)
+            return;
         
         switch (movementState)
         {
@@ -65,18 +87,18 @@ public class Unit : MonoBehaviour
 
             case MOVEMENTSTATE.MoveSelected:
                 if (Input.GetMouseButtonUp(0))
-                {   //definition of targetCell
+                {   //targetCell
                     int targetCell = tgs.cellHighlightedIndex;
                     if (targetCell != -1)
                     {
-                        //definition of startCell
+                        //startCell
                         int startCell = tgs.CellGetIndex(tgs.CellGetAtPosition(transform.position, true));
                         float totalCost;
                         //builds a path from startCell to targetCell
                         moveList = tgs.FindPath(startCell, targetCell, out totalCost);
                         if (moveList == null)
                             return;
-
+                        
                         //check if path exceeds unitRange
                         if (movementPoints >= totalCost)
                         {
@@ -84,12 +106,13 @@ public class Unit : MonoBehaviour
                             movementState = MOVEMENTSTATE.Moving;
                             movementPoints -= totalCost;
                             Debug.Log("UnitMovementPoints: " + movementPoints);
-                            
                         }
                         else
                         {
                             Debug.Log("Movement Range exceeded");
                         }
+                        tgs.CellSetTag(targetCell, cellOccupied);
+                        
                     }
                     else
                     {
@@ -99,7 +122,6 @@ public class Unit : MonoBehaviour
                 break;
         }
     }
-   //Moves Unit, checks if unit has reached next cell and updates movecounter if not 
    void Move(Vector3 targetPos)
    {
       float speed = 10;
@@ -137,6 +159,34 @@ public class Unit : MonoBehaviour
                unit.selectionState = SELECTIONSTATE.Deselected;
            }
        }
+   }
+   
+   void DefineFrontFacing()
+   {
+       int cellIndex = tgs.CellGetNeighbour(tgs.cellLastClickedIndex, CELL_SIDE.Bottom);
+       tgs.CellFlash(cellIndex, Color.cyan, 1f);
+   }
+   
+   void RotateRight()
+   {
+       if(selectionState != SELECTIONSTATE.Selected) 
+           return;
+       
+       transform.rotation *= Quaternion.Euler(0, 60, 0);
+   }
+
+   void RotateLeft()
+   {
+       if(selectionState != SELECTIONSTATE.Selected) 
+           return;
+       
+       transform.rotation *= Quaternion.Euler(0, -60, 0);
+   }
+
+   void FindOccupiedCells()
+   {
+       Cell occCell = tgs.CellGetWithTag(cellOccupied);
+       tgs.CellFlash(occCell, Color.green, 4);
    }
 }
 
