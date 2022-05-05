@@ -7,7 +7,10 @@ public class Unit : MonoBehaviour
 { 
     //Movement Fields
    int startCellIndex;
-   int cellOccupied = 1;
+   
+   //Cell Tags
+   int cellEmpty = 1;
+   int cellOccupied = 2;
    
    float movementPoints = 10;
    short moveCounter;
@@ -56,11 +59,6 @@ public class Unit : MonoBehaviour
        {
            RotateRight();
        }
-
-       if (Input.GetKeyDown(KeyCode.F))
-       {
-           FindOccupiedCells();
-       }
    }
 
    void CalculateMovement()
@@ -87,7 +85,7 @@ public class Unit : MonoBehaviour
 
             case MOVEMENTSTATE.MoveSelected:
                 if (Input.GetMouseButtonUp(0))
-                {   //targetCell
+                {
                     int targetCell = tgs.cellHighlightedIndex;
                     if (targetCell != -1)
                     {
@@ -111,8 +109,9 @@ public class Unit : MonoBehaviour
                         {
                             Debug.Log("Movement Range exceeded");
                         }
+                        tgs.CellSetTag(startCell, cellEmpty);
                         tgs.CellSetTag(targetCell, cellOccupied);
-                        
+                        GridManager.Instance.UpdateOccupiedCellsList(startCell, cellEmpty, targetCell, cellOccupied);
                     }
                     else
                     {
@@ -144,8 +143,11 @@ public class Unit : MonoBehaviour
            RaycastHit hit;
            if (Physics.Raycast(ray, out hit))
            {
-             Unit unitSelected = hit.transform.GetComponent<Unit>();
-             unitSelected.selectionState = SELECTIONSTATE.Selected;
+               if (hit.transform.CompareTag("TestUnit"))
+               {
+                    Unit unitSelected = hit.transform.GetComponent<Unit>();
+                    unitSelected.selectionState = SELECTIONSTATE.Selected;
+               }
            }
        }
    }
@@ -183,10 +185,6 @@ public class Unit : MonoBehaviour
        transform.rotation *= Quaternion.Euler(0, -60, 0);
    }
 
-   void FindOccupiedCells()
-   {
-       Cell occCell = tgs.CellGetWithTag(cellOccupied);
-       tgs.CellFlash(occCell, Color.green, 4);
-   }
+
 }
 
