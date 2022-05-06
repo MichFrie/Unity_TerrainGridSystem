@@ -79,6 +79,11 @@ public class Unit : MonoBehaviour
        { 
            ShowCellSide();
        }
+
+       if (Input.GetKeyDown(KeyCode.T))
+       {
+           ShowMovementRange();
+       }
    }
 
    void CalculateMovement()
@@ -322,6 +327,19 @@ void CheckAnglesFor0()
         bottomLeftOfCell = tgs.CellGetAtPosition(column, row - 1);
         bottomRightOfCell = tgs.CellGetAtPosition(column + 1, row + 1);
     }  
-
+    void ShowMovementRange()
+    {     
+        if (selectionState == SELECTIONSTATE.Deselected)
+            return;
+        
+        Cell cell = tgs.CellGetAtPosition(transform.position, true);
+        int cellIndex = tgs.CellGetIndex(cell);
+        List<int> neighbours = tgs.CellGetNeighbours(cellIndex, (int)movementPoints);
+       
+        if (neighbours != null)
+        {
+            tgs.CellFlash(neighbours, Color.yellow, 1f);
+        }
+    }
 }
 
