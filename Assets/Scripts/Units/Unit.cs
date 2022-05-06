@@ -45,6 +45,8 @@ public class Unit : MonoBehaviour
    public Cell topRightOfCell;
    public Cell bottomLeftOfCell;
    public Cell bottomRightOfCell;
+
+   public UnitStats unitStats;
    
    MOVEMENTSTATE movementState;
    SELECTIONSTATE selectionState;
@@ -54,7 +56,7 @@ public class Unit : MonoBehaviour
       tgs = TerrainGridSystem.instance;
       movementState = MOVEMENTSTATE.MoveSelected;
       selectionState = SELECTIONSTATE.Deselected;
-  }
+   }
    
    void Update()
    {
@@ -85,7 +87,7 @@ public class Unit : MonoBehaviour
            ShowMovementRange();
        }
    }
-
+   
    void CalculateMovement()
     {
         if(selectionState != SELECTIONSTATE.Selected)
