@@ -7,7 +7,7 @@ public class Unit : MonoBehaviour
 { 
     //Movement Fields
    int startCellIndex;
-   float movementPoints = 10;
+   float movementPoints = 100;
    short moveCounter;
    List<int> moveList;
    TerrainGridSystem tgs;
@@ -46,8 +46,6 @@ public class Unit : MonoBehaviour
    public Cell bottomLeftOfCell;
    public Cell bottomRightOfCell;
 
-   public UnitStats unitStats;
-   
    MOVEMENTSTATE movementState;
    SELECTIONSTATE selectionState;
    
@@ -118,12 +116,14 @@ public class Unit : MonoBehaviour
                     {
                         //startCell
                         int startCell = tgs.CellGetIndex(tgs.CellGetAtPosition(transform.position, true));
-                        float totalCost;
+                        float totalCost;                        
+                       
                         //builds a path from startCell to targetCell
-                        moveList = tgs.FindPath(startCell, targetCell, out totalCost);
+                        moveList = tgs.FindPath(startCell, targetCell, out totalCost, 0, 0, GridManager.cellGroupEmpty);
                         if (moveList == null)
                             return;
-                        
+                                                                
+                       
                         //check if path exceeds unitRange
                         if (movementPoints >= totalCost)
                         {
@@ -138,7 +138,7 @@ public class Unit : MonoBehaviour
                         }
                         tgs.CellSetTag(startCell, cellEmpty);
                         tgs.CellSetTag(targetCell, cellOccupied);
-                        GridManager.Instance.UpdateOccupiedCellsList(startCell, cellEmpty, targetCell, cellOccupied);
+                         GridManager.Instance.UpdateOccupiedCellsList(startCell, cellEmpty, targetCell, cellOccupied);
                     }
                     else
                     {
@@ -185,7 +185,10 @@ public class Unit : MonoBehaviour
        {
            foreach (var unit in UnitManager.Instance.playableUnits)
            {
-               unit.selectionState = SELECTIONSTATE.Deselected;
+               if (unit.movementState == MOVEMENTSTATE.MoveSelected)
+               { 
+                   unit.selectionState = SELECTIONSTATE.Deselected;
+               }
            }
        }
    }

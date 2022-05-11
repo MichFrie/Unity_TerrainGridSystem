@@ -12,9 +12,13 @@ public class GridManager : MonoBehaviour
     //Cell Tags
     int cellEmpty = 1;
     int cellOccupied = 2;
-
+    
+    //Cell Groups
+    public const int cellGroupEmpty = 1;
+    public const int cellGroupOccupied = 2;
+    
     public Dictionary<int, int> occupiedCells = new Dictionary<int, int>();
-
+    
     public static GridManager Instance;
 
     void Awake()
@@ -37,9 +41,12 @@ public class GridManager : MonoBehaviour
 
     void Update()
     {
-       
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            ShowCellGroup();
+        }   
     }
-
+    
     void CreateOccupiedCellsList()
     {
         GameObject[] gameobjects;
@@ -56,7 +63,6 @@ public class GridManager : MonoBehaviour
             foreach (var v in occupiedCells)
             {
                 Cell occCell = tgs.CellGetWithTag(cellOccupied);
-                tgs.CellFlash(occCell, Color.green, 4);
             }
         }
     }
@@ -66,26 +72,37 @@ public class GridManager : MonoBehaviour
         if (!occupiedCells.ContainsKey(startCell))
         {
             occupiedCells.Add(startCell, startCellStatus);
+            tgs.CellSetGroup(startCell, cellGroupEmpty);
         }
-
+        else
+        {
+            tgs.CellSetGroup(startCell, cellGroupEmpty);
+        }
         if (!occupiedCells.ContainsKey(targetCell))
         {
             occupiedCells.Add(targetCell, targetCellStatus);
+            tgs.CellSetGroup(targetCell, cellGroupOccupied);
         }
-
-        foreach (var v in occupiedCells)
+        else
         {
-            Cell occCell = tgs.CellGetWithTag(startCellStatus);
-            tgs.CellFlash(occCell, Color.green, 4);
+            tgs.CellSetGroup(targetCell, cellGroupOccupied);
         }
-
     }
-    
-    //Snaps unit to center of gridcell
-    // void SnapToCellCenter() {
-    //     Vector3 pos = tgs.SnapToCell(testUnit.transform.position);
-    //     // Shift pos a bit upwards
-    //     pos -= tgs.transform.forward;
-    //     testUnit.transform.position = pos;
-    //}
+
+    void ShowCellGroup()
+    {
+        List<Cell> cells = tgs.cells;
+        foreach (Cell c in cells)
+        {
+            int groupIndex = tgs.CellGetGroup(tgs.CellGetIndex(c));
+            if (groupIndex == cellGroupEmpty)
+            {
+                tgs.CellFlash(tgs.CellGetIndex(c), Color.green, 2f);
+            }
+            else if (groupIndex == cellGroupOccupied)
+            {
+                tgs.CellFlash(tgs.CellGetIndex(c), Color.red, 2f);
+            }
+        }
+    }
 }
