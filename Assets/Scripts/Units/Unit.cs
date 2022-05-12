@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using TGS;
@@ -28,16 +29,18 @@ public class Unit : MonoBehaviour
        Selected,
        Deselected
    }
-   
-   enum CELLSIDES
+   enum FACING
    {
-       FrontOFCell, 
-       BackOfCell, 
-       TopLeftOfCell, 
-       TopRightOfCell, 
-       BottomLeftOfCell, 
-       BottomRightOfCell
+       Facing0,
+       Facing60,
+       Facing120,
+       Facing180,
+       Facing240,
+       Facing300
    }
+
+   [SerializeField] FACING facing;
+   [SerializeField] int cone = 95;
    
    public Cell backOfCell;
    public Cell frontOfCell;
@@ -48,6 +51,8 @@ public class Unit : MonoBehaviour
 
    MOVEMENTSTATE movementState;
    SELECTIONSTATE selectionState;
+
+   Cell targetPoint;
    
    void Start()
    {
@@ -84,6 +89,11 @@ public class Unit : MonoBehaviour
        {
            ShowMovementRange();
        }
+
+       if (Input.GetKeyDown(KeyCode.H))
+       {
+           CheckConeAngleViaTargetPoint();
+       }
    }
    
    void CalculateMovement()
@@ -119,7 +129,7 @@ public class Unit : MonoBehaviour
                         float totalCost;                        
                        
                         //builds a path from startCell to targetCell
-                        moveList = tgs.FindPath(startCell, targetCell, out totalCost, 0, 0, GridManager.cellGroupEmpty);
+                        moveList = tgs.FindPath(startCell, targetCell, out totalCost, 0, 0, GridManager.cellEmpty_Group);
                         if (moveList == null)
                             return;
                                                                 
@@ -205,6 +215,7 @@ public class Unit : MonoBehaviour
            return;
        
        transform.rotation *= Quaternion.Euler(0, 60, 0);
+       CalculateFacing();
    }
 
    void RotateLeft()
@@ -213,20 +224,33 @@ public class Unit : MonoBehaviour
            return;
        
        transform.rotation *= Quaternion.Euler(0, -60, 0);
+       CalculateFacing();
    }
    
-   public void CalculateCellSide()
+   public void CalculateFacing()
    {
        int angle = Mathf.Abs((int)transform.eulerAngles.y);
-
+        
        switch (angle)
        {
-           case 0: CheckAnglesFor0(); break;
-           case 60: CheckAnglesFor60(); break;
-           case 120: CheckAnglesFor120(); break;
-           case 180: CheckAnglesFor180(); break;
-           case 240: CheckAnglesFor240(); break;
-           case 300: CheckAnglesFor300(); break;
+           case 0: CheckAnglesFor0();
+               facing = FACING.Facing0;
+               break;
+           case 60: CheckAnglesFor60();
+               facing = FACING.Facing60;
+               break;
+           case 120: CheckAnglesFor120();
+               facing = FACING.Facing120;
+               break;
+           case 180: CheckAnglesFor180();
+               facing = FACING.Facing180;
+               break;
+           case 240: CheckAnglesFor240();
+               facing = FACING.Facing240;
+               break;
+           case 300: CheckAnglesFor300();
+               facing = FACING.Facing300;
+               break;
            default: break;
        }
    }
@@ -236,7 +260,7 @@ public class Unit : MonoBehaviour
        if (selectionState == SELECTIONSTATE.Deselected)
            return;
        
-       CalculateCellSide();
+       CalculateFacing();
        tgs.CellColorTemp(frontOfCell, Color.green, 3f);
        tgs.CellColorTemp(topLeftOfCell, Color.green, 3f);
        tgs.CellColorTemp(topRightOfCell, Color.green, 3f);
@@ -346,5 +370,80 @@ void CheckAnglesFor0()
             tgs.CellFlash(neighbours, Color.yellow, 1f);
         }
     }
+
+    void CheckConeAngleViaLastClickedHex()
+    {
+        List<int> coneIndices = new List<int>();
+        Cell cell = tgs.CellGetAtPosition(transform.position, true);
+        int cellIndex = tgs.CellGetIndex(cell);
+
+        Vector2 startPos = tgs.cells[cellIndex].center;
+        Vector2 endPos = tgs.cells[tgs.cellLastClickedIndex].center;
+        Vector2 direction = endPos - startPos;
+        float maxDistance = Vector2.Distance(startPos, endPos);
+        direction /= maxDistance;
+        
+        tgs.CellGetWithinCone(cellIndex, direction, maxDistance, 95.0f, coneIndices);
+        
+        foreach (var c in coneIndices)
+        {
+            tgs.CellFlash(c, Color.cyan, 2f);
+        }
+    }
+    
+    void CheckConeAngleViaTargetPoint()
+    {
+        if (selectionState == SELECTIONSTATE.Deselected)
+            return;
+        
+        List<int> coneIndices = new List<int>();
+        Cell cell = tgs.CellGetAtPosition(transform.position, true);
+        int cellIndex = tgs.CellGetIndex(cell);
+        CalculateConesViaTargetPoints();
+        int targetCellIndex = tgs.CellGetIndex(targetPoint);
+        tgs.GetCellsWithinCone(cellIndex, targetCellIndex,  cone, coneIndices);
+
+        foreach (var c in coneIndices)
+        {
+            tgs.CellFlash(c, Color.cyan, 2f);
+            
+        }
+    }
+
+    void CalculateConesViaTargetPoints()
+    {
+        Cell cell = tgs.CellGetAtPosition(transform.position, true);
+
+        int row = cell.row;
+        int column = cell.column;
+
+        switch (facing)
+        {
+            case FACING.Facing0: targetPoint = tgs.CellGetAtPosition(column, row +3);
+                break;
+            case FACING.Facing60: targetPoint = tgs.CellGetAtPosition(column + 3, row + 2);
+                break;
+            case FACING.Facing120: targetPoint = tgs.CellGetAtPosition(column + 3, row - 1);
+                break;
+            case FACING.Facing180: targetPoint = tgs.CellGetAtPosition(column, row - 3);
+                break;
+            case FACING.Facing240: targetPoint = tgs.CellGetAtPosition(column - 3, row - 1);
+                break;
+            case FACING.Facing300: targetPoint = tgs.CellGetAtPosition(column - 3, row + 2);
+                break;
+                
+            default: break;
+        }
+    }
+    //Units can see through other units but not wood etc.
+    // void ShowLineOfSight()
+    // {
+    //     List<int> neighbours = tgs.CellGetNeighbours(tgs.cellLastClickedIndex, 10, tgs.CellGetGroup(GridManager.cellOccupied_Group));
+    //     if(neighbours != null)
+    //     {
+    //         tgs.CellTestLineOfSight(tgs.cellHighlightedIndex, neighbours);
+    //         tgs.CellFlash(neighbours, Color.red, 1f);
+    //     }
+    // }
 }
 

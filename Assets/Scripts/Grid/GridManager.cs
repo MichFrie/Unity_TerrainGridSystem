@@ -14,8 +14,8 @@ public class GridManager : MonoBehaviour
     int cellOccupied = 2;
     
     //Cell Groups
-    public const int cellGroupEmpty = 1;
-    public const int cellGroupOccupied = 2;
+    public const int cellEmpty_Group = 1;
+    public const int cellOccupied_Group = 2;
     
     public Dictionary<int, int> occupiedCells = new Dictionary<int, int>();
     
@@ -39,13 +39,6 @@ public class GridManager : MonoBehaviour
         CreateOccupiedCellsList();
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            ShowCellGroup();
-        }   
-    }
     
     void CreateOccupiedCellsList()
     {
@@ -72,34 +65,35 @@ public class GridManager : MonoBehaviour
         if (!occupiedCells.ContainsKey(startCell))
         {
             occupiedCells.Add(startCell, startCellStatus);
-            tgs.CellSetGroup(startCell, cellGroupEmpty);
+            tgs.CellSetGroup(startCell, cellEmpty_Group);
         }
         else
         {
-            tgs.CellSetGroup(startCell, cellGroupEmpty);
+            tgs.CellSetGroup(startCell, cellEmpty_Group);
         }
         if (!occupiedCells.ContainsKey(targetCell))
         {
             occupiedCells.Add(targetCell, targetCellStatus);
-            tgs.CellSetGroup(targetCell, cellGroupOccupied);
+            tgs.CellSetGroup(targetCell, cellOccupied_Group);
         }
         else
         {
-            tgs.CellSetGroup(targetCell, cellGroupOccupied);
+            tgs.CellSetGroup(targetCell, cellOccupied_Group);
         }
     }
 
+    //DebugFunction to show Cell groups
     void ShowCellGroup()
     {
         List<Cell> cells = tgs.cells;
         foreach (Cell c in cells)
         {
             int groupIndex = tgs.CellGetGroup(tgs.CellGetIndex(c));
-            if (groupIndex == cellGroupEmpty)
+            if (groupIndex == cellEmpty_Group)
             {
                 tgs.CellFlash(tgs.CellGetIndex(c), Color.green, 2f);
             }
-            else if (groupIndex == cellGroupOccupied)
+            else if (groupIndex == cellOccupied_Group)
             {
                 tgs.CellFlash(tgs.CellGetIndex(c), Color.red, 2f);
             }
