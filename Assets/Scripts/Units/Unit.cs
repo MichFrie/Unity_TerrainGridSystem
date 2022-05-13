@@ -268,7 +268,7 @@ public class Unit : MonoBehaviour
        tgs.CellColorTemp(bottomLeftOfCell, Color.red, 3f);
        tgs.CellColorTemp(bottomRightOfCell, Color.red, 3f);
    }
-void CheckAnglesFor0()
+    void CheckAnglesFor0()
     {
         Cell cell = tgs.CellGetAtPosition(transform.position, true);
 

@@ -8,7 +8,8 @@ using TGS;
 public class GridManager : MonoBehaviour
 {
     TerrainGridSystem tgs;
-    
+    List<Cell> allCells;
+
     //Cell Tags
     int cellEmpty = 1;
     int cellOccupied = 2;
@@ -16,6 +17,11 @@ public class GridManager : MonoBehaviour
     //Cell Groups
     public const int cellEmpty_Group = 1;
     public const int cellOccupied_Group = 2;
+    
+    //Movement Costs
+    int grassCost = 2;
+    int roadCost = 1;
+    int rockCost = 4;
     
     public Dictionary<int, int> occupiedCells = new Dictionary<int, int>();
     
@@ -36,9 +42,33 @@ public class GridManager : MonoBehaviour
     void Start()
     {
         tgs = TerrainGridSystem.instance;
+        InitialCellBehaviour();
         CreateOccupiedCellsList();
     }
 
+    void InitialCellBehaviour()
+    {
+        allCells = tgs.cells;
+        foreach (Cell cell in allCells)
+        {
+            int cellIndex = tgs.CellGetIndex(cell);
+            if (tgs.CellGetTexture(cellIndex) == tgs.textures[1])
+            {
+                tgs.CellSetCrossCost(cellIndex, grassCost);
+                tgs.CellToggleRegionSurface(cellIndex, false, tgs.textures[1]);
+            }
+            else if (tgs.CellGetTexture(cellIndex) == tgs.textures[2])
+            {
+                tgs.CellSetCrossCost(cellIndex, roadCost);
+                tgs.CellToggleRegionSurface(cellIndex, false, tgs.textures[2]);
+            }
+            else if (tgs.CellGetTexture(cellIndex) == tgs.textures[3])
+            {
+                tgs.CellSetCrossCost(cellIndex, rockCost);
+                tgs.CellToggleRegionSurface(cellIndex, false, tgs.textures[3]);
+            }
+        }
+    }
     
     void CreateOccupiedCellsList()
     {
