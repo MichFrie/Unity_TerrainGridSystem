@@ -6,7 +6,7 @@ public abstract class Player : MonoBehaviour
 {
   public int PlayerNumber;
   
-  public virtual void Initialize(GridManager gridManager){}
+  public virtual void Initialize(GameManager gameManager){}
 
-  public abstract void Play(GridManager gridManager);
+  public abstract void Play(GameManager gameManager);
 }
