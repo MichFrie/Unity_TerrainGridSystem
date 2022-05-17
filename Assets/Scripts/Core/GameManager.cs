@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class GameManager : MonoBehaviour
     //EventHandler
     public event EventHandler GameStarted;
     public event EventHandler GameEnded;
+    public event EventHandler TurnEnded;
 
     //CellGridState
     public CellGridState CellGridState;
@@ -34,6 +36,9 @@ public class GameManager : MonoBehaviour
     //PlayerParent
     public Transform PlayerParent;
     
+    //Playable Units
+    List<Unit> PlayableUnits = new List<Unit>();
+
     //Awake
     void Awake()
     {
@@ -49,8 +54,9 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        PlayableUnits = UnitManager.Instance.playableUnits;
         //Initialize();
-        UnitManager.Instance.FindPlayableUnits();
+        //FindPlayableUnits in Unitmanager deaktiviert();
         //StartGame();
     }
 
@@ -85,13 +91,12 @@ public class GameManager : MonoBehaviour
             GameStarted.Invoke(this, new EventArgs());
 
             TransitionResult transitionResult = GetComponent<TurnResolver>().ResolveStart(this);
-            
-            List<Unit> PlayableUnits = UnitManager.Instance.playableUnits; 
+
             PlayableUnits = transitionResult.PlayableUnits;
             
-            //PlayableUnits.ForEach...
-            
             CurrentPlayerNumber = transitionResult.NextPlayer.PlayerNumber;
+            
+            //PlayableUnits.ForEach(u => { u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnStart(this)); u.OnTurnStart(); });
             
             CurrentPlayer.Play(this);
             Debug.Log("GameStarted");
@@ -99,6 +104,30 @@ public class GameManager : MonoBehaviour
     }
 
     public void EndTurn()
+    {
+        //blocks PlayerInput while CPU is playing?
+        CellGridState = new CellGridStateBlockInput(this);
+
+        bool isGameFinished = IsGameFinished();
+        if (isGameFinished)
+            return;
+        
+        //PlayableUnits.ForEach(u => { if (u != null) { u.OnTurnEnd(); u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnEnd(this)); } });
+
+        TransitionResult transitionResult = GetComponent<TurnResolver>().ResolveTurn(this);
+        PlayableUnits = transitionResult.PlayableUnits;
+        CurrentPlayerNumber = transitionResult.NextPlayer.PlayerNumber;
+
+        if (TurnEnded != null)
+        {
+            TurnEnded.Invoke(this, new EventArgs());
+        }
+        Debug.Log(string.Format("Player {0} turn", CurrentPlayerNumber));
+        //PlayableUnits.ForEach(u => { u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnStart(this)); u.OnTurnStart(); });
+        CurrentPlayer.Play(this);
+    }
+
+    public bool IsGameFinished()
     {
         
     }
