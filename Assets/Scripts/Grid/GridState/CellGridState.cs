@@ -7,4 +7,11 @@
         {
             gameManager = _gameManager;
         }
+        public virtual CellGridState MakeTransition(CellGridState nextState)
+        {
+            return nextState;
+        }
+        public virtual void OnStateExit()
+        {
+        }
     }

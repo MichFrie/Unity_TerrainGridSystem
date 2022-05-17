@@ -6,15 +6,40 @@ using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
+    //Singleton
     public static GameManager Instance;
 
     //EventHandler
+    public event EventHandler LevelLoading;
+    public event EventHandler LevelLoadingDone;
     public event EventHandler GameStarted;
     public event EventHandler GameEnded;
     public event EventHandler TurnEnded;
 
     //CellGridState
-    public CellGridState CellGridState;
+    CellGridState cellGridState;
+
+    //Property for CellGridState
+    public CellGridState CellGridState
+    {
+        get { return cellGridState; }
+        set
+        {
+            CellGridState nextState;
+            if (cellGridState != null)
+            {
+                cellGridState.OnStateExit();
+                nextState = cellGridState.MakeTransition(value);
+            }
+            else
+            {
+                nextState = value;
+            }
+
+            cellGridState = nextState;
+            //cellGridState.OnStateEnter();
+        }
+    }
     
     //Number of Players
     public List<Player> Players { get; private set; }
@@ -54,9 +79,20 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        PlayableUnits = UnitManager.Instance.playableUnits;
+        //Old Method only for testing, replace!
+        UnitManager.Instance.FindPlayableUnits();
+
+        // if (LevelLoading != null)
+        // {
+        //     LevelLoading.Invoke(this, new EventArgs());
+        // }
+        //PlayableUnits = UnitManager.Instance.playableUnits;
         //Initialize();
-        //FindPlayableUnits in Unitmanager deaktiviert();
+
+        // if (LevelLoadingDone != null)
+        // {
+        //     LevelLoadingDone.Invoke(this, new EventArgs());
+        // }
         //StartGame();
     }
 
@@ -106,7 +142,7 @@ public class GameManager : MonoBehaviour
     public void EndTurn()
     {
         //blocks PlayerInput while CPU is playing?
-        CellGridState = new CellGridStateBlockInput(this);
+        cellGridState = new CellGridStateBlockInput(this);
 
         bool isGameFinished = IsGameFinished();
         if (isGameFinished)
@@ -138,13 +174,12 @@ public class GameManager : MonoBehaviour
         {
             if (gameResult.IsFinished)
             {
-                CellGridState = new CellGridStateGameOver(this);
+                cellGridState = new CellGridStateGameOver(this);
                 GameFinished = true;
                 if (GameEnded != null)
                 {
                     GameEnded.Invoke(this, new GameEndedArgs(gameResult));
                 }
-
                 break;
             }
         }
