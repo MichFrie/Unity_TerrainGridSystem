@@ -7,11 +7,12 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    //CellGridState ???
-    
     //EventHandler
     public event EventHandler GameStarted;
     public event EventHandler GameEnded;
+
+    //CellGridState
+    public CellGridState CellGridState;
     
     //Number of Players
     public List<Player> Players { get; private set; }
@@ -77,15 +78,28 @@ public class GameManager : MonoBehaviour
         //UnitManager
     }
 
-    void StartGame()
+    public void StartGame()
     {
         if (GameStarted != null)
         {
             GameStarted.Invoke(this, new EventArgs());
 
             TransitionResult transitionResult = GetComponent<TurnResolver>().ResolveStart(this);
-            UnitManager.Instance.playableUnits = transitionResult.PlayableUnits;
-
+            
+            List<Unit> PlayableUnits = UnitManager.Instance.playableUnits; 
+            PlayableUnits = transitionResult.PlayableUnits;
+            
+            //PlayableUnits.ForEach...
+            
+            CurrentPlayerNumber = transitionResult.NextPlayer.PlayerNumber;
+            
+            CurrentPlayer.Play(this);
+            Debug.Log("GameStarted");
         } 
+    }
+
+    public void EndTurn()
+    {
+        
     }
 }
