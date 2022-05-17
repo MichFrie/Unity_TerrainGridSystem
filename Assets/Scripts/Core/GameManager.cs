@@ -129,6 +129,27 @@ public class GameManager : MonoBehaviour
 
     public bool IsGameFinished()
     {
-        
+        List<GameResult> gameResults =
+            GetComponents<GameEndCondition>()
+                .Select(c => c.CheckCondition(this))
+                .ToList();
+
+        foreach (var gameResult in gameResults)
+        {
+            if (gameResult.IsFinished)
+            {
+                CellGridState = new CellGridStateGameOver(this);
+                GameFinished = true;
+                if (GameEnded != null)
+                {
+                    GameEnded.Invoke(this, new GameEndedArgs(gameResult));
+                }
+
+                break;
+            }
+        }
+
+        return GameFinished;
+
     }
 }
