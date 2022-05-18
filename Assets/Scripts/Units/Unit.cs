@@ -6,6 +6,9 @@ using TGS;
 //BaseClass
 public class Unit : MonoBehaviour
 { 
+    //PlayerNumber
+    public int PlayerNumber;
+    
     //Movement Fields
    int startCellIndex;
    float movementPoints = 100;

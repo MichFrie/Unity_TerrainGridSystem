@@ -11,6 +11,14 @@
         {
             return nextState;
         }
+        
+        public virtual void OnStateEnter()
+        {
+            // foreach (var cell in gameManager.Cells)
+            // {
+            //     cell.UnMark();
+            // }
+        }
         public virtual void OnStateExit()
         {
         }

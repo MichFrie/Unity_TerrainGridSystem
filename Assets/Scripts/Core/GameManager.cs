@@ -35,9 +35,8 @@ public class GameManager : MonoBehaviour
             {
                 nextState = value;
             }
-
             cellGridState = nextState;
-            //cellGridState.OnStateEnter();
+            cellGridState.OnStateEnter();
         }
     }
     
@@ -64,6 +63,9 @@ public class GameManager : MonoBehaviour
     //Playable Units
     List<Unit> PlayableUnits = new List<Unit>();
 
+    //Units
+    public List<Unit> Units { get; private set; }
+
     //Awake
     void Awake()
     {
@@ -81,19 +83,19 @@ public class GameManager : MonoBehaviour
     {
         //Old Method only for testing, replace!
         UnitManager.Instance.FindPlayableUnits();
-
+    
         // if (LevelLoading != null)
         // {
         //     LevelLoading.Invoke(this, new EventArgs());
         // }
         //PlayableUnits = UnitManager.Instance.playableUnits;
-        //Initialize();
+        Initialize();
 
         // if (LevelLoadingDone != null)
         // {
         //     LevelLoadingDone.Invoke(this, new EventArgs());
         // }
-        //StartGame();
+        StartGame();
     }
 
     void Initialize()
@@ -117,7 +119,9 @@ public class GameManager : MonoBehaviour
         
         //Event Methods
         
-        //UnitManager
+        //UnitManager will iterate over units
+
+        Units = new List<Unit>();
     }
 
     public void StartGame()
@@ -125,18 +129,19 @@ public class GameManager : MonoBehaviour
         if (GameStarted != null)
         {
             GameStarted.Invoke(this, new EventArgs());
+        }
 
-            TransitionResult transitionResult = GetComponent<TurnResolver>().ResolveStart(this);
+        TransitionResult transitionResult = GetComponent<TurnResolver>().ResolveStart(this);
 
-            PlayableUnits = transitionResult.PlayableUnits;
-            
-            CurrentPlayerNumber = transitionResult.NextPlayer.PlayerNumber;
-            
-            //PlayableUnits.ForEach(u => { u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnStart(this)); u.OnTurnStart(); });
-            
-            CurrentPlayer.Play(this);
-            Debug.Log("GameStarted");
-        } 
+        //PlayableUnits = transitionResult.PlayableUnits;
+        
+        CurrentPlayerNumber = transitionResult.NextPlayer.PlayerNumber;
+        
+        //PlayableUnits.ForEach(u => { u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnStart(this)); u.OnTurnStart(); });
+        
+        CurrentPlayer.Play(this);
+        Debug.Log("GameStarted");
+    
     }
 
     public void EndTurn()
@@ -162,7 +167,19 @@ public class GameManager : MonoBehaviour
         //PlayableUnits.ForEach(u => { u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnStart(this)); u.OnTurnStart(); });
         CurrentPlayer.Play(this);
     }
-
+    public List<Unit> GetCurrentPlayerUnits()
+    {
+        return PlayableUnits;
+    }
+    // public List<Unit> GetEnemyUnits(Player player)
+    // {
+    //     return Units.FindAll(u => u.PlayerNumber != player.PlayerNumber);
+    // }
+    // public List<Unit> GetPlayerUnits(Player player)
+    // {
+    //     return Units.FindAll(u => u.PlayerNumber == player.PlayerNumber);
+    // }
+    
     public bool IsGameFinished()
     {
         List<GameResult> gameResults =
@@ -183,8 +200,6 @@ public class GameManager : MonoBehaviour
                 break;
             }
         }
-
         return GameFinished;
-
     }
 }
