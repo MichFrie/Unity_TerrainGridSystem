@@ -22,4 +22,9 @@
         public virtual void OnStateExit()
         {
         }
+
+        public virtual void OnUnitClicked(Unit unit)
+        {
+            Debug.Log(unit.name);
+        }
     }

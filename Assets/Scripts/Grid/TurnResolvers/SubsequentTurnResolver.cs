@@ -13,6 +13,15 @@ public class SubsequentTurnResolver : TurnResolver
 
     public override TransitionResult ResolveTurn(GameManager gameManager)
     {
-        throw new System.NotImplementedException();
+        var nextPlayerNumber = (gameManager.CurrentPlayerNumber + 1) % gameManager.NumberOfPlayers;
+        while (gameManager.Units.FindAll(u => u.PlayerNumber.Equals(nextPlayerNumber)).Count == 0)
+        {
+            nextPlayerNumber = (nextPlayerNumber + 1) % gameManager.NumberOfPlayers;
+        }
+
+        var nextPlayer = gameManager.Players.Find(p => p.PlayerNumber == nextPlayerNumber);
+        var allowedUnits = gameManager.Units.FindAll(u => u.PlayerNumber == nextPlayerNumber);
+
+        return new TransitionResult(nextPlayer, allowedUnits);
     }
 }

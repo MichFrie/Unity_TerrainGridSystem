@@ -8,7 +8,7 @@ public class UnitManager : MonoBehaviour
 {
    public static UnitManager Instance { get; private set; }
 
-   public List<Unit> playableUnits = new List<Unit>();
+   public List<Unit> Units = new List<Unit>();
 
    void Awake()
    {
@@ -22,8 +22,9 @@ public class UnitManager : MonoBehaviour
       }
    }
 
+   //Debug Method
    public void FindPlayableUnits()
    {
-      playableUnits = FindObjectsOfType<Unit>().ToList();
+      Units = FindObjectsOfType<Unit>().ToList();
    }
 }

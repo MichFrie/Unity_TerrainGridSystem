@@ -57,6 +57,9 @@ public class Unit : MonoBehaviour
 
    Cell targetPoint;
    
+   //EventHandler
+   public event EventHandler Unitclicked;
+   
    void Start()
    {
       tgs = TerrainGridSystem.instance;
@@ -196,7 +199,7 @@ public class Unit : MonoBehaviour
    {
        if (Input.GetMouseButtonDown(1))
        {
-           foreach (var unit in UnitManager.Instance.playableUnits)
+           foreach (var unit in UnitManager.Instance.Units)
            {
                if (unit.movementState == MOVEMENTSTATE.MoveSelected)
                { 
@@ -438,6 +441,17 @@ public class Unit : MonoBehaviour
             default: break;
         }
     }
+
+    //EVents get called in CellGridState
+    public void OnMouseDown()
+    {
+        if (Unitclicked != null)
+        {
+            Unitclicked.Invoke(this, new EventArgs());
+        }
+    }
+
+
     //Units can see through other units but not wood etc.
     // void ShowLineOfSight()
     // {

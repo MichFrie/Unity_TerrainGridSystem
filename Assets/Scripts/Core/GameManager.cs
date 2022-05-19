@@ -63,8 +63,7 @@ public class GameManager : MonoBehaviour
     //Playable Units
     List<Unit> PlayableUnits = new List<Unit>();
 
-    //Units
-    //TODO implement Units-List
+    //Units, List must still be implemented
     public List<Unit> Units { get; private set; }
 
     //Awake
@@ -121,8 +120,13 @@ public class GameManager : MonoBehaviour
         //Event Methods
         
         //UnitManager will iterate over units
-
         Units = new List<Unit>();
+        UnitManager.Instance.FindPlayableUnits();
+
+        foreach (var unit in UnitManager.Instance.Units)
+        {
+            AddUnit(unit.GetComponent<Transform>());
+        }
     }
 
     public void StartGame()
@@ -180,6 +184,18 @@ public class GameManager : MonoBehaviour
     // {
     //     return Units.FindAll(u => u.PlayerNumber == player.PlayerNumber);
     // }
+
+    
+    //Event handler Methods
+
+    void OnUnitClicked(object sender, EventArgs e)
+    {
+        cellGridState.OnUnitClicked(sender as Unit);
+    }
+    public void AddUnit(Transform unit)
+    {
+        unit.GetComponent<Unit>().Unitclicked += OnUnitClicked;
+    }
     
     public bool IsGameFinished()
     {
