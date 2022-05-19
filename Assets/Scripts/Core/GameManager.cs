@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour
     List<Unit> PlayableUnits = new List<Unit>();
 
     //Units
+    //TODO implement Units-List
     public List<Unit> Units { get; private set; }
 
     //Awake
