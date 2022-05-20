@@ -194,6 +194,7 @@ public class GameManager : MonoBehaviour
     }
     public void AddUnit(Transform unit)
     {
+        Units.Add(unit.GetComponent<Unit>());
         unit.GetComponent<Unit>().Unitclicked += OnUnitClicked;
     }
     

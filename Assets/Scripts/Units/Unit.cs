@@ -11,7 +11,7 @@ public class Unit : MonoBehaviour
     
     //Movement Fields
    int startCellIndex;
-   float movementPoints = 100;
+   float debugMovementPoints = 100;
    short moveCounter;
    List<int> moveList;
    TerrainGridSystem tgs;
@@ -20,7 +20,61 @@ public class Unit : MonoBehaviour
       int cellEmpty = 1;
       int cellOccupied = 2;
       
-   enum MOVEMENTSTATE
+      
+    //Buffs
+    List<(Buff buff, int timeLeft)> Buffs;
+    
+    //Unit Attributes
+    public int TotalHitPoints { get; private set; }
+    public float TotalMovementPoints { get; private set; }
+    public float TotalActionPoints { get; private set; }  
+    
+    public int HitPoints;
+    public int AttackRange;
+    public int AttackFactor;
+    public int DefenceFactor;
+    
+    [SerializeField]
+    float movementPoints;
+    public virtual float MovementPoints
+    {
+        get
+        {
+            return movementPoints;
+        }
+        protected set
+        {
+            movementPoints = value;
+        }
+    }
+    [SerializeField]
+    float actionPoints = 1;
+    public float ActionPoints
+    {
+        get
+        {
+            return actionPoints;
+        }
+        set
+        {
+            actionPoints = value;
+        }
+    }
+    
+    
+    //Unit Cell
+    Cell cell;  
+    public Cell Cell
+    {
+        get { return cell; }
+        set
+        {
+            cell = value;
+        }
+    }
+
+    //Enumerations
+    enum MOVEMENTSTATE
    {
       Idle,
       Moving,
@@ -59,6 +113,21 @@ public class Unit : MonoBehaviour
    
    //EventHandler
    public event EventHandler Unitclicked;
+   public event EventHandler UnitSelected;
+   public event EventHandler UnitDeselected;
+   public event EventHandler UnitHighlighted;
+   public event EventHandler UnitDehighlighted;
+   
+   public virtual void Initialize()
+   {
+       Buffs = new List<(Buff, int)>();
+
+       //UnitState = new UnitStateNormal(this);
+
+       TotalHitPoints = HitPoints;
+       TotalMovementPoints = MovementPoints;
+       TotalActionPoints = ActionPoints;
+   }
    
    void Start()
    {
@@ -141,12 +210,12 @@ public class Unit : MonoBehaviour
                                                                 
                        
                         //check if path exceeds unitRange
-                        if (movementPoints >= totalCost)
+                        if (debugMovementPoints >= totalCost)
                         {
                             moveCounter = 0;
                             movementState = MOVEMENTSTATE.Moving;
-                            movementPoints -= totalCost;
-                            Debug.Log("UnitMovementPoints: " + movementPoints);
+                            debugMovementPoints -= totalCost;
+                            Debug.Log("UnitMovementPoints: " + debugMovementPoints);
                         }
                         else
                         {
@@ -369,7 +438,7 @@ public class Unit : MonoBehaviour
         
         Cell cell = tgs.CellGetAtPosition(transform.position, true);
         int cellIndex = tgs.CellGetIndex(cell);
-        List<int> neighbours = tgs.CellGetNeighbours(cellIndex, (int)movementPoints);
+        List<int> neighbours = tgs.CellGetNeighbours(cellIndex, (int)debugMovementPoints);
        
         if (neighbours != null)
         {
@@ -442,7 +511,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    //EVents get called in CellGridState
+    //Events get called in CellGridState
     public void OnMouseDown()
     {
         if (Unitclicked != null)
@@ -451,7 +520,20 @@ public class Unit : MonoBehaviour
         }
     }
 
-
+    protected virtual void OnMouseEnter()
+    {
+        if (UnitHighlighted != null)
+        {
+            UnitHighlighted.Invoke(this, new EventArgs());
+        }
+    }
+    protected virtual void OnMouseExit()
+    {
+        if (UnitDehighlighted != null)
+        {
+            UnitDehighlighted.Invoke(this, new EventArgs());
+        }
+    }
     //Units can see through other units but not wood etc.
     // void ShowLineOfSight()
     // {
