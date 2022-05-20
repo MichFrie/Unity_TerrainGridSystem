@@ -112,12 +112,12 @@ public class Unit : MonoBehaviour
    Cell targetPoint;
    
    //EventHandler
-   public event EventHandler Unitclicked;
+   public event EventHandler UnitcClicked;
    public event EventHandler UnitSelected;
    public event EventHandler UnitDeselected;
    public event EventHandler UnitHighlighted;
    public event EventHandler UnitDehighlighted;
-   
+   public event EventHandler<MovementEventArgs> UnitMoved;
    public virtual void Initialize()
    {
        Buffs = new List<(Buff, int)>();
@@ -514,9 +514,9 @@ public class Unit : MonoBehaviour
     //Events get called in CellGridState
     public void OnMouseDown()
     {
-        if (Unitclicked != null)
+        if (UnitcClicked != null)
         {
-            Unitclicked.Invoke(this, new EventArgs());
+            UnitcClicked.Invoke(this, new EventArgs());
         }
     }
 
@@ -534,6 +534,40 @@ public class Unit : MonoBehaviour
             UnitDehighlighted.Invoke(this, new EventArgs());
         }
     }
+    
+    //MovementEventArgs
+    public class MovementEventArgs : EventArgs
+    {
+        public Cell OriginCell;
+        public Cell DestinationCell;
+        public List<Cell> Path;
+        public Unit Unit;
+
+        public MovementEventArgs(Cell sourceCell, Cell destinationCell, List<Cell> path, Unit unit)
+        {
+            OriginCell = sourceCell;
+            DestinationCell = destinationCell;
+            Path = path;
+            Unit = unit;
+        }
+    }
+
+
+    //AttackEventArgs
+    public class AttackEventArgs : EventArgs
+    {
+        public Unit Attacker;
+        public Unit Defender;
+        public int Damage;
+        public AttackEventArgs(Unit attacker, Unit defender, int damage)
+        {
+            Attacker = attacker;
+            Defender = defender;
+            Damage = damage;
+        }
+    }
+    
+    
     //Units can see through other units but not wood etc.
     // void ShowLineOfSight()
     // {

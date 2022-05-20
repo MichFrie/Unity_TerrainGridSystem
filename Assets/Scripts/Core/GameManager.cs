@@ -195,7 +195,7 @@ public class GameManager : MonoBehaviour
     public void AddUnit(Transform unit)
     {
         Units.Add(unit.GetComponent<Unit>());
-        unit.GetComponent<Unit>().Unitclicked += OnUnitClicked;
+        unit.GetComponent<Unit>().UnitcClicked += OnUnitClicked;
     }
     
     public bool IsGameFinished()
