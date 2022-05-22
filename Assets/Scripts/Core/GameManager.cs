@@ -176,14 +176,14 @@ public class GameManager : MonoBehaviour
     {
         return PlayableUnits;
     }
-    // public List<Unit> GetEnemyUnits(Player player)
-    // {
-    //     return Units.FindAll(u => u.PlayerNumber != player.PlayerNumber);
-    // }
-    // public List<Unit> GetPlayerUnits(Player player)
-    // {
-    //     return Units.FindAll(u => u.PlayerNumber == player.PlayerNumber);
-    // }
+    public List<Unit> GetEnemyUnits(Player player)
+    {
+        return Units.FindAll(u => u.PlayerNumber != player.PlayerNumber);
+    }
+    public List<Unit> GetPlayerUnits(Player player)
+    {
+        return Units.FindAll(u => u.PlayerNumber == player.PlayerNumber);
+    }
 
     
     //Event handler Methods

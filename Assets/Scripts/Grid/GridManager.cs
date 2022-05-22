@@ -45,7 +45,7 @@ public class GridManager : MonoBehaviour
         InitialCellBehaviour();
         CreateOccupiedCellsList();
     }
-
+    
     void InitialCellBehaviour()
     {
         allCells = tgs.cells;
@@ -128,5 +128,22 @@ public class GridManager : MonoBehaviour
                 tgs.CellFlash(tgs.CellGetIndex(c), Color.red, 2f);
             }
         }
+    }
+
+    public int GetDistance(int sourceCell, int targetCell)
+    {
+        return tgs.CellGetHexagonDistance(sourceCell, targetCell);
+    }
+
+    public int GetUnitPosition()
+    {   
+        Cell cell = tgs.CellGetAtPosition(transform.position, true);
+        int cellIndex = tgs.CellGetIndex(cell);
+        return cellIndex;
+    }
+
+    public int GetLastClickedPosition()
+    {
+        return tgs.cellLastClickedIndex;
     }
 }

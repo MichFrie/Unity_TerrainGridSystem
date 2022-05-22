@@ -41,4 +41,6 @@ public class Ability : MonoBehaviour
 
         yield return 0;
     }
+    
+    public virtual void Display(GameManager gameManager) { }
 }

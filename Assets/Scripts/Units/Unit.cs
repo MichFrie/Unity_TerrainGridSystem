@@ -510,8 +510,15 @@ public class Unit : MonoBehaviour
             default: break;
         }
     }
-
-    //Events get called in CellGridState
+    
+    public virtual bool IsUnitAttackable(Unit target, int targetCell, int sourceCell)
+    {
+        return GridManager.Instance.GetDistance(sourceCell, targetCell) <= AttackRange
+               && target.PlayerNumber != PlayerNumber
+               && ActionPoints >= 1;
+    }
+    
+    //Events Functions, get called in CellGridState
     public void OnMouseDown()
     {
         if (UnitcClicked != null)
