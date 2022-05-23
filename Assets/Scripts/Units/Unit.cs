@@ -73,6 +73,8 @@ public class Unit : MonoBehaviour
         }
     }
 
+    public UnitState UnitState { get; set; }
+
     //Enumerations
     enum MOVEMENTSTATE
    {
@@ -118,10 +120,11 @@ public class Unit : MonoBehaviour
    public event EventHandler UnitHighlighted;
    public event EventHandler UnitDehighlighted;
    public event EventHandler<MovementEventArgs> UnitMoved;
+   //TODO: Initialize doesnt get called
    public virtual void Initialize()
    {
        Buffs = new List<(Buff, int)>();
-
+       
        //UnitState = new UnitStateNormal(this);
 
        TotalHitPoints = HitPoints;
@@ -158,6 +161,7 @@ public class Unit : MonoBehaviour
        if ((Input.GetKeyDown(KeyCode.I)))
        { 
            ShowCellSide();
+           OnUnitSelected();
        }
 
        if (Input.GetKeyDown(KeyCode.T))
@@ -540,8 +544,37 @@ public class Unit : MonoBehaviour
         {
             UnitDehighlighted.Invoke(this, new EventArgs());
         }
-    }
+    }    
     
+    public void SetState(UnitState state)
+     {
+         UnitState.MakeTransition(state);
+         Debug.Log(string.Format("{0} - {1}", gameObject, UnitState));
+     }
+    
+    public virtual void OnUnitSelected()
+    {
+        
+        if (FindObjectOfType<GameManager>().GetCurrentPlayerUnits().Contains(this))
+        {
+            Debug.Log("Test on unit selected");
+            SetState(new UnitStateMarkedAsSelected(this));
+        }
+        if (UnitSelected != null)
+        {
+            UnitSelected.Invoke(this, new EventArgs());
+        }
+    }
+    /// <summary>
+    /// Unit State Methods
+    /// </summary>
+
+
+    public virtual void MarkAsSelected()
+    {
+        
+    }
+
     //MovementEventArgs
     public class MovementEventArgs : EventArgs
     {

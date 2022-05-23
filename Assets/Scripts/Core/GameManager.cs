@@ -138,7 +138,7 @@ public class GameManager : MonoBehaviour
 
         TransitionResult transitionResult = GetComponent<TurnResolver>().ResolveStart(this);
 
-        //PlayableUnits = transitionResult.PlayableUnits;
+        PlayableUnits = transitionResult.PlayableUnits;
         
         CurrentPlayerNumber = transitionResult.NextPlayer.PlayerNumber;
         
