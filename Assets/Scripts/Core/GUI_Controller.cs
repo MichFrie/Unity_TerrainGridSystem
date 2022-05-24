@@ -16,7 +16,7 @@ public class GUI_Controller
 
     void OnGameStarted(object sender, EventArgs e)
     {
-        //
+        
     }
 
     void OnUnitHighlighted(object sender, EventArgs e)

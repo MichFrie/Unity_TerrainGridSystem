@@ -25,6 +25,10 @@
 
         public virtual void OnUnitClicked(Unit unit)
         {
-            Debug.Log(unit.name);
+            Debug.Log("Test: " + unit.name);
         }
+        
+        // public virtual void OnCellClicked(Cell cell)
+        // {
+        // }
     }
