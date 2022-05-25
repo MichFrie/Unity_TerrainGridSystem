@@ -203,7 +203,7 @@ public class GameManager : MonoBehaviour
         unit.GetComponent<Unit>().UnitClicked += OnUnitClicked;
     }
  
-    //Event handler Methods
+    //TODO: implementation missing, should be called each time after unit is moving to a new cell
     public void OnUnitMoved(object sender, EventArgs e)
     {
         CheckGameFinished();
