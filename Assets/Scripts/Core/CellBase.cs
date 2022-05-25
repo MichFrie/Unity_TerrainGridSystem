@@ -4,7 +4,7 @@ using UnityEngine;
 
     public abstract class CellBase : MonoBehaviour
     {
-        // stuff missing
+        //Todo: implement CellBase completely, use tgs.cellhighlighted for mouse hover actions
 
         public event EventHandler CellClicked;
         public event EventHandler CellHighlighted;

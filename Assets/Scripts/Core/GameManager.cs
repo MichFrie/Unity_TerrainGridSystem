@@ -10,10 +10,20 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     //EventHandler
+    // LevelLoading event is invoked before Initialize method is run.
     public event EventHandler LevelLoading;
+    
+
+    // LevelLoadingDone event is invoked after Initialize method has finished running.
     public event EventHandler LevelLoadingDone;
+    
+    //GameStarted event is invoked at the beginning of StartGame method.
     public event EventHandler GameStarted;
-    public event EventHandler GameEnded;
+    
+    //GameEnded event is invoked when there is a single player left in the game.
+    public event EventHandler<GameEndedArgs> GameEnded;
+    
+    //Turn ended event is invoked at the end of each turn.
     public event EventHandler TurnEnded;
 
     //CellGridState
@@ -28,7 +38,9 @@ public class GameManager : MonoBehaviour
             CellGridState nextState;
             if (cellGridState != null)
             {
+                // Method is called on transitioning out of a state.
                 cellGridState.OnStateExit();
+                //Sets next state, MakeTransition returns CellGridState nextState
                 nextState = cellGridState.MakeTransition(value);
             }
             else
@@ -84,17 +96,18 @@ public class GameManager : MonoBehaviour
         //Old Method only for testing, replace!
         UnitManager.Instance.FindPlayableUnits();
     
-        // if (LevelLoading != null)
-        // {
-        //     LevelLoading.Invoke(this, new EventArgs());
-        // }
+        //TODO: implement LevelLoading
+        if (LevelLoading != null)
+        {
+            LevelLoading.Invoke(this, new EventArgs());
+        }
         //PlayableUnits = UnitManager.Instance.playableUnits;
         Initialize();
 
-        // if (LevelLoadingDone != null)
-        // {
-        //     LevelLoadingDone.Invoke(this, new EventArgs());
-        // }
+        if (LevelLoadingDone != null)
+        {
+            LevelLoadingDone.Invoke(this, new EventArgs());
+        }
         StartGame();
     }
 
