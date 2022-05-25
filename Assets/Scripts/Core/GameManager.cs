@@ -96,11 +96,12 @@ public class GameManager : MonoBehaviour
         //Old Method only for testing, replace!
         UnitManager.Instance.FindPlayableUnits();
     
-        //TODO: implement LevelLoading
+        //Event is implemented in GUI_Controller
         if (LevelLoading != null)
         {
             LevelLoading.Invoke(this, new EventArgs());
         }
+        //Todo: PlayableUnits not working
         //PlayableUnits = UnitManager.Instance.playableUnits;
         Initialize();
 
@@ -117,24 +118,22 @@ public class GameManager : MonoBehaviour
 
         Players = new List<Player>();
 
-        //Initialize Players
+        //Working, Initializes Players
         for (int i = 0; i < PlayerParent.childCount; i++)
         {
             var player = PlayerParent.GetChild(i).GetComponent<Player>();
             if(player != null && player.gameObject.activeInHierarchy)
             {
+                //TODO: will get overriden by AiPlayer, not yet implemented. Human Player just calls base method
                 player.Initialize(this);
                 Players.Add(player);
             }
         }
         
         //GridManager will iterate over cells
-        
-        //Event Methods
-        
+
         //UnitManager will iterate over units
         Units = new List<Unit>();
-        UnitManager.Instance.FindPlayableUnits();
 
         foreach (var unit in UnitManager.Instance.Units)
         {
@@ -167,7 +166,7 @@ public class GameManager : MonoBehaviour
         //blocks PlayerInput while CPU is playing?
         cellGridState = new CellGridStateBlockInput(this);
 
-        bool isGameFinished = IsGameFinished();
+        bool isGameFinished = CheckGameFinished();
         if (isGameFinished)
             return;
         
@@ -197,22 +196,29 @@ public class GameManager : MonoBehaviour
     {
         return Units.FindAll(u => u.PlayerNumber == player.PlayerNumber);
     }
-
     
+    public void AddUnit(Transform unit)
+    {
+        Units.Add(unit.GetComponent<Unit>());
+        unit.GetComponent<Unit>().UnitClicked += OnUnitClicked;
+    }
+ 
     //Event handler Methods
-
+    public void OnUnitMoved(object sender, EventArgs e)
+    {
+        CheckGameFinished();
+    }
+    
     void OnUnitClicked(object sender, EventArgs e)
     {
         cellGridState.OnUnitClicked(sender as Unit);
     }
-    public void AddUnit(Transform unit)
-    {
-        Units.Add(unit.GetComponent<Unit>());
-        unit.GetComponent<Unit>().UnitcClicked += OnUnitClicked;
-    }
+
     
-    public bool IsGameFinished()
+    public bool CheckGameFinished()
     {
+        //looks for GameEndCondition as ParentClass for different WinConditions, CheckConditions can be implemented differently depending on condition
+        //called every Time after a unit is moved
         List<GameResult> gameResults =
             GetComponents<GameEndCondition>()
                 .Select(c => c.CheckCondition(this))

@@ -114,7 +114,7 @@ public class Unit : MonoBehaviour
    Cell targetPoint;
    
    //EventHandler
-   public event EventHandler UnitcClicked;
+   public event EventHandler UnitClicked;
    public event EventHandler UnitSelected;
    public event EventHandler UnitDeselected;
    public event EventHandler UnitHighlighted;
@@ -525,9 +525,9 @@ public class Unit : MonoBehaviour
     //Events Functions, get called in CellGridState
     public void OnMouseDown()
     {
-        if (UnitcClicked != null)
+        if (UnitClicked != null)
         {
-            UnitcClicked.Invoke(this, new EventArgs());
+            UnitClicked.Invoke(this, new EventArgs());
         }
     }
 
