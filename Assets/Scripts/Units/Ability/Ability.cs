@@ -43,4 +43,6 @@ public class Ability : MonoBehaviour
     }
     
     public virtual void Display(GameManager gameManager) { }
+    public virtual void OnTurnEnd(GameManager gameManager) { }
+    public virtual void OnTurnStart(GameManager gameManager) { }
 }

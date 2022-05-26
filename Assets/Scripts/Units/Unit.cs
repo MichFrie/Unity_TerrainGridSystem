@@ -544,8 +544,8 @@ public class Unit : MonoBehaviour
         {
             UnitDehighlighted.Invoke(this, new EventArgs());
         }
-    }    
-    
+    }
+
     public void SetState(UnitState state)
      {
          UnitState.MakeTransition(state);
@@ -564,6 +564,29 @@ public class Unit : MonoBehaviour
         {
             UnitSelected.Invoke(this, new EventArgs());
         }
+    }
+
+    public virtual void OnTurnStart()
+    {
+        //cachedPaths = null;
+        
+        Buffs.FindAll(b=>b.timeLeft == 0).ForEach(b => { b.buff.Undo(this);});
+        Buffs.RemoveAll(b => b.timeLeft == 0);
+        var name = this.name;
+        var state = UnitState;
+        //SetState(new UnitStateMarkedAsFriendly(this));
+    }
+
+    public virtual void OnTurnEnd()
+    {
+        for (int i = 0; i < Buffs.Count; i++)
+        {
+            (Buff buff, int timeLeft) = Buffs[i];
+            Buffs[i] = (buff, timeLeft - 1);
+        }
+
+        // MovementPoints = TotalMovementPoints;
+        // ActionPoints = TotalActionPoints;
     }
     /// <summary>
     /// Unit State Methods
@@ -606,7 +629,20 @@ public class Unit : MonoBehaviour
             Damage = damage;
         }
     }
+    /// <summary>
+    /// Gives visual indication that the unit is under attack.
+    /// </summary>
+    /// <param name="aggressor">
+    /// Unit that is attacking.
+    /// </param>
     
+    public virtual void MarkAsFriendly()
+    {
+        // if (UnitHighlighterAggregator != null)
+        // {
+        //     UnitHighlighterAggregator.MarkAsFriendlyFn?.ForEach(o => o.Apply(this, null));
+        // }
+    }
     
     //Units can see through other units but not wood etc.
     // void ShowLineOfSight()

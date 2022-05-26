@@ -170,7 +170,7 @@ public class GameManager : MonoBehaviour
         if (isGameFinished)
             return;
         
-        //PlayableUnits.ForEach(u => { if (u != null) { u.OnTurnEnd(); u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnEnd(this)); } });
+        PlayableUnits.ForEach(u => { if (u != null) { u.OnTurnEnd(); u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnEnd(this)); } });
 
         TransitionResult transitionResult = GetComponent<TurnResolver>().ResolveTurn(this);
         PlayableUnits = transitionResult.PlayableUnits;
@@ -181,7 +181,7 @@ public class GameManager : MonoBehaviour
             TurnEnded.Invoke(this, new EventArgs());
         }
         Debug.Log(string.Format("Player {0} turn", CurrentPlayerNumber));
-        //PlayableUnits.ForEach(u => { u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnStart(this)); u.OnTurnStart(); });
+        PlayableUnits.ForEach(u => { u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnStart(this)); u.OnTurnStart(); });
         CurrentPlayer.Play(this);
     }
     public List<Unit> GetCurrentPlayerUnits()
