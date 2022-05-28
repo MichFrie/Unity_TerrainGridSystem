@@ -588,16 +588,65 @@ public class Unit : MonoBehaviour
         // MovementPoints = TotalMovementPoints;
         // ActionPoints = TotalActionPoints;
     }
-    /// <summary>
-    /// Unit State Methods
-    /// </summary>
+    
 
+    public void AttackHandler(Unit unitToAttack)
+    {
+        AttackAction attackAction = DealDamage(unitToAttack);
+        MarkAsAttacking(unitToAttack);
+        unitToAttack.DefendHandler(this, attackAction.Damage);
+        //AttackActionPerformed(attackAction.ActionCost);
+    }
+    
+    protected virtual AttackAction DealDamage(Unit unitToAttack)
+    {
+        return new AttackAction(AttackFactor, 1f);
+    }
 
+    public void DefendHandler(Unit aggressor, int damage)
+    {
+        MarkAsDefending(aggressor);
+        int damageTaken = Defend(aggressor, damage);
+        HitPoints -= damage;
+        //DefenceActionPerformed();
+        // if (UnitAttacked != null)
+        // {
+        //     UnitAttacked.Invoke(this, new AttackEventArgs(aggressor, this, damage));
+        // }
+        // if (HitPoints <= 0)
+        // {
+        //     if (UnitDestroyed != null)
+        //     {
+        //         UnitDestroyed.Invoke(this, new AttackEventArgs(aggressor, this, damage));
+        //     }
+        //     OnDestroyed();
+        // }
+    }
+    
     public virtual void MarkAsSelected()
     {
         
     }
 
+    public virtual void MarkAsAttacking(Unit target)
+    {
+        
+    }
+
+    public virtual void MarkAsDefending(Unit aggressor)
+    {
+        
+    }
+
+    public virtual void MarkAsReachableEnemy()
+    {
+        
+    }
+    protected virtual int Defend(Unit aggressor, int damage)
+    {
+        return Mathf.Clamp(damage - DefenceFactor, 1, damage);
+    }
+    
     //MovementEventArgs
     public class MovementEventArgs : EventArgs
     {
@@ -629,6 +678,18 @@ public class Unit : MonoBehaviour
             Damage = damage;
         }
     }
+
+    public class AttackAction
+    {
+        public readonly int Damage;
+        public readonly float ActionCost;
+
+        public AttackAction(int damage, float actionCost)
+        {
+            Damage = damage;
+            ActionCost = actionCost;
+        }
+    }
     /// <summary>
     /// Gives visual indication that the unit is under attack.
     /// </summary>
@@ -644,15 +705,6 @@ public class Unit : MonoBehaviour
         // }
     }
     
-    //Units can see through other units but not wood etc.
-    // void ShowLineOfSight()
-    // {
-    //     List<int> neighbours = tgs.CellGetNeighbours(tgs.cellLastClickedIndex, 10, tgs.CellGetGroup(GridManager.cellOccupied_Group));
-    //     if(neighbours != null)
-    //     {
-    //         tgs.CellTestLineOfSight(tgs.cellHighlightedIndex, neighbours);
-    //         tgs.CellFlash(neighbours, Color.red, 1f);
-    //     }
-    // }
+    
 }
 

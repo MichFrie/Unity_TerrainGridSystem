@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
         {
             LevelLoading.Invoke(this, new EventArgs());
         }
-        //Todo: PlayableUnits not working
+        //Todo: UnitManager not working
         //PlayableUnits = UnitManager.Instance.playableUnits;
         Initialize();
 
@@ -147,14 +147,17 @@ public class GameManager : MonoBehaviour
         {
             GameStarted.Invoke(this, new EventArgs());
         }
-
+        //calls one of the TurnResolvers, eg SubsequentTurnResolver. all TurnResolvers inherit from abstract class TurnResolver. SubseqneutTurnResolver overrides ResolveStart Method. REsolveStart finds nextPlayerNmber
+        //NextPlayer and all allowed units
         TransitionResult transitionResult = GetComponent<TurnResolver>().ResolveStart(this);
 
+        //Stores all playable units in list
         PlayableUnits = transitionResult.PlayableUnits;
         
         CurrentPlayerNumber = transitionResult.NextPlayer.PlayerNumber;
         
-        //PlayableUnits.ForEach(u => { u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnStart(this)); u.OnTurnStart(); });
+        //removes buffs that have run out of time
+        PlayableUnits.ForEach(u => { u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnStart(this)); u.OnTurnStart(); });
         
         CurrentPlayer.Play(this);
         Debug.Log("GameStarted");
@@ -166,12 +169,15 @@ public class GameManager : MonoBehaviour
         //blocks PlayerInput while CPU is playing?
         cellGridState = new CellGridStateBlockInput(this);
 
+        //checks if Game is finished
         bool isGameFinished = CheckGameFinished();
         if (isGameFinished)
             return;
         
+        //reduces the duration of buffs by 1 (Unit.cs), Ability.cs is abstract call?
         PlayableUnits.ForEach(u => { if (u != null) { u.OnTurnEnd(); u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnEnd(this)); } });
 
+        //resolves Turn and calls next player
         TransitionResult transitionResult = GetComponent<TurnResolver>().ResolveTurn(this);
         PlayableUnits = transitionResult.PlayableUnits;
         CurrentPlayerNumber = transitionResult.NextPlayer.PlayerNumber;
@@ -180,7 +186,10 @@ public class GameManager : MonoBehaviour
         {
             TurnEnded.Invoke(this, new EventArgs());
         }
+        
         Debug.Log(string.Format("Player {0} turn", CurrentPlayerNumber));
+        
+        //removes all buffs that have run out of time
         PlayableUnits.ForEach(u => { u.GetComponents<Ability>().ToList().ForEach(a => a.OnTurnStart(this)); u.OnTurnStart(); });
         CurrentPlayer.Play(this);
     }
@@ -201,6 +210,14 @@ public class GameManager : MonoBehaviour
     {
         Units.Add(unit.GetComponent<Unit>());
         unit.GetComponent<Unit>().UnitClicked += OnUnitClicked;
+        // unit.GetComponent<Unit>().UnitHighlighted += OnUnitHighlighted;
+        // unit.GetComponent<Unit>().UnitDehighlighted += OnUnitDehighlighted;
+        // unit.GetComponent<Unit>().UnitDestroyed += OnUnitDestroyed;
+        // unit.GetComponent<Unit>().UnitMoved += OnUnitMoved;
+        
+        //UnitAdded event is invoked each time AddUnit method is called.
+        // if (UnitAdded != null)
+        //     UnitAdded.Invoke(this, new UnitCreatedEventArgs(unit));
     }
  
     //TODO: implementation missing, should be called each time after unit is moving to a new cell
@@ -211,7 +228,7 @@ public class GameManager : MonoBehaviour
     
     void OnUnitClicked(object sender, EventArgs e)
     {
-        cellGridState.OnUnitClicked(sender as Unit);
+        
     }
 
     

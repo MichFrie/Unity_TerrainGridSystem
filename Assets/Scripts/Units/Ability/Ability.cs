@@ -28,16 +28,16 @@ public class Ability : MonoBehaviour
         
     }
 
-    public virtual IEnumerator Act(GridManager gridManager)
+    public virtual IEnumerator Act(GameManager gameManager)
     {
         yield return 0;
     }
 
-    IEnumerator Act(GridManager gridManager, Action<GridManager> preAction, Action<GridManager> postAction)
+    public virtual IEnumerator Act(GameManager gameManager, Action<GameManager> preAction, Action<GameManager> postAction)
     {
-        preAction(gridManager);
-        yield return StartCoroutine(Act(gridManager));
-        postAction(gridManager);
+        preAction(gameManager);
+        yield return StartCoroutine(Act(gameManager));
+        postAction(gameManager);
 
         yield return 0;
     }
@@ -45,4 +45,5 @@ public class Ability : MonoBehaviour
     public virtual void Display(GameManager gameManager) { }
     public virtual void OnTurnEnd(GameManager gameManager) { }
     public virtual void OnTurnStart(GameManager gameManager) { }
+    public virtual void OnUnitClicked(Unit unit, GameManager gameManager) { }
 }

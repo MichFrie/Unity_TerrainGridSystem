@@ -22,11 +22,7 @@
         public virtual void OnStateExit()
         {
         }
-
-        public virtual void OnUnitClicked(Unit unit)
-        {
-            Debug.Log("Test: " + unit.name);
-        }
+        
         
         // public virtual void OnCellClicked(Cell cell)
         // {
