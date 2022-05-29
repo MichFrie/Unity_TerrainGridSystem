@@ -7,6 +7,7 @@ public class CellGridStateAbilitySelected : CellGridState
     List<Ability> _abilities;
     Unit _unit;
 
+    //ok
     public CellGridStateAbilitySelected(GameManager gameManager, Unit unit, List<Ability> abilities) : base(gameManager)
     {
         if (abilities.Count == 0)
@@ -18,6 +19,7 @@ public class CellGridStateAbilitySelected : CellGridState
         _unit = unit;
     }
 
+    //ok
     public override void OnUnitClicked(Unit unit)
     {
         _abilities.ForEach(a => a.OnUnitClicked(unit, gameManager));

@@ -145,6 +145,7 @@ public class Unit : MonoBehaviour
        CalculateMovement();
        SelectUnit();
        DeselectUnit();
+       CheckDistanceToTarget();
 
        if (Input.GetKeyDown(KeyCode.O))
        {
@@ -517,6 +518,26 @@ public class Unit : MonoBehaviour
         }
     }
 
+    void CheckDistanceToTarget()
+    {
+        if (Input.GetMouseButtonUp(1))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                Vector3 unitPosition = this.transform.position;
+                Vector3 targetPosition = hit.transform.position;           
+                
+                int attackingUnit = tgs.CellGetIndex(tgs.CellGetAtPosition(unitPosition, true));
+                int defendingUnit = tgs.CellGetIndex(tgs.CellGetAtPosition(targetPosition, true));
+                int distanceToTarget = tgs.CellGetHexagonDistance(attackingUnit, defendingUnit);
+                Debug.Log(distanceToTarget);
+            }
+        }
+    }
+
+    //TODO: Not working
     public virtual bool IsUnitAttackable(Unit other, int sourceCell)
     {
         return IsUnitAttackable(other, other.Cell, sourceCell);

@@ -36,6 +36,7 @@ public class AttackAbility: Ability
         inAttackRange.ForEach(u=>u.MarkAsReachableEnemy());
     }
 
+    //generally ok, if part not working
     public override void OnUnitClicked(Unit unit, GameManager gameManager)
     {
         if (unit.IsUnitAttackable(unit, UnitReference.Cell))
