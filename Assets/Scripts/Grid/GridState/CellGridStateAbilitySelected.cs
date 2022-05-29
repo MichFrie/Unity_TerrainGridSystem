@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 public class CellGridStateAbilitySelected : CellGridState
 {
     List<Ability> _abilities;
     Unit _unit;
-    
+
     public CellGridStateAbilitySelected(GameManager gameManager, Unit unit, List<Ability> abilities) : base(gameManager)
     {
         if (abilities.Count == 0)
@@ -15,5 +16,10 @@ public class CellGridStateAbilitySelected : CellGridState
 
         _abilities = abilities;
         _unit = unit;
+    }
+
+    public override void OnUnitClicked(Unit unit)
+    {
+        _abilities.ForEach(a => a.OnUnitClicked(unit, gameManager));
     }
 }

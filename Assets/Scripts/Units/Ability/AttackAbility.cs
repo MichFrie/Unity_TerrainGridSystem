@@ -2,12 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AttackAbility: Ability
 {
     public Unit UnitToAttack { get; set; }
     List<Unit> inAttackRange;
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            Display(GameManager.Instance);
+        }
+    }
 
     public override IEnumerator Act(GameManager gameManager)
     {
@@ -29,9 +38,11 @@ public class AttackAbility: Ability
 
     public override void OnUnitClicked(Unit unit, GameManager gameManager)
     {
-        // if (unit.IsUnitAttackable(unit, UnitReference.Cell))
-        // {
-        //     
-        // }
+        if (unit.IsUnitAttackable(unit, UnitReference.Cell))
+        {
+            UnitToAttack = unit;
+            Debug.Log("TestAttack");
+        }
+        Debug.Log("AttackAbility");
     }
 }

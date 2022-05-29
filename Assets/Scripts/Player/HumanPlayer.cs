@@ -1,5 +1,4 @@
-﻿using Grid.GridState;
-using UnityEngine;
+﻿using UnityEngine;
 
     public class HumanPlayer : Player
     {

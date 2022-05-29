@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.AI;
 
 public class GameManager : MonoBehaviour
 {
@@ -28,7 +29,8 @@ public class GameManager : MonoBehaviour
 
     //CellGridState
     CellGridState cellGridState;
-
+    
+    //TODO:CellGridState is not initialized
     //Property for CellGridState
     public CellGridState CellGridState
     {
@@ -226,9 +228,10 @@ public class GameManager : MonoBehaviour
         CheckGameFinished();
     }
     
+    //ok
     void OnUnitClicked(object sender, EventArgs e)
     {
-        
+        CellGridState.OnUnitClicked(sender as Unit);
     }
 
     

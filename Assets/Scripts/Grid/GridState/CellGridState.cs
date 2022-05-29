@@ -27,4 +27,8 @@
         // public virtual void OnCellClicked(Cell cell)
         // {
         // }
+        
+        public virtual void OnUnitClicked(Unit unit)
+        {
+        }
     }

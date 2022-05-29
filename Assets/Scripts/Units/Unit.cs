@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using TGS;
+using UnityEditor;
 
 //BaseClass
 public class Unit : MonoBehaviour
@@ -17,8 +18,8 @@ public class Unit : MonoBehaviour
    TerrainGridSystem tgs;
    
     //Cell Tags
-      int cellEmpty = 1;
-      int cellOccupied = 2;
+    int cellEmpty = 1;
+    int cellOccupied = 2;
       
       
     //Buffs
@@ -63,8 +64,8 @@ public class Unit : MonoBehaviour
     
     
     //Unit Cell
-    Cell cell;  
-    public Cell Cell
+    int cell;  
+    public int Cell
     {
         get { return cell; }
         set
@@ -201,6 +202,7 @@ public class Unit : MonoBehaviour
                 if (Input.GetMouseButtonUp(0))
                 {
                     int targetCell = tgs.cellHighlightedIndex;
+                    Cell = targetCell;
                     if (targetCell != -1)
                     {
                         //startCell
@@ -514,6 +516,11 @@ public class Unit : MonoBehaviour
             default: break;
         }
     }
+
+    public virtual bool IsUnitAttackable(Unit other, int sourceCell)
+    {
+        return IsUnitAttackable(other, other.Cell, sourceCell);
+    }
     
     public virtual bool IsUnitAttackable(Unit target, int targetCell, int sourceCell)
     {
@@ -523,6 +530,7 @@ public class Unit : MonoBehaviour
     }
     
     //Events Functions, get called in CellGridState
+    //ok
     public void OnMouseDown()
     {
         if (UnitClicked != null)
@@ -570,10 +578,10 @@ public class Unit : MonoBehaviour
     {
         //cachedPaths = null;
         
-        Buffs.FindAll(b=>b.timeLeft == 0).ForEach(b => { b.buff.Undo(this);});
-        Buffs.RemoveAll(b => b.timeLeft == 0);
-        var name = this.name;
-        var state = UnitState;
+        //Buffs.FindAll(b=>b.timeLeft == 0).ForEach(b => { b.buff.Undo(this);});
+        // Buffs.RemoveAll(b => b.timeLeft == 0);
+        // var name = this.name;
+        // var state = UnitState;
         //SetState(new UnitStateMarkedAsFriendly(this));
     }
 
