@@ -678,6 +678,11 @@ public class Unit : MonoBehaviour
     {
         
     }
+
+    public virtual void MarkAsFinished()
+    {
+        
+    }
     protected virtual int Defend(Unit aggressor, int damage)
     {
         return Mathf.Clamp(damage - DefenceFactor, 1, damage);
