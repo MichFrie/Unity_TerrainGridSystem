@@ -17,11 +17,15 @@ public class Unit : MonoBehaviour
    List<int> moveList;
    TerrainGridSystem tgs;
    
+   //Attack Fields
+   int attackingUnit;
+   int defendingUnit;
+   int distanceToUnit;
+   
     //Cell Tags
     int cellEmpty = 1;
     int cellOccupied = 2;
-      
-      
+
     //Buffs
     List<(Buff buff, int timeLeft)> Buffs;
     
@@ -87,8 +91,12 @@ public class Unit : MonoBehaviour
    enum SELECTIONSTATE
    {
        Selected,
-       Deselected
+       Deselected,
+       TargetSelected,
+       TargetDeselected
    }
+
+
    enum FACING
    {
        Facing0,
@@ -111,7 +119,7 @@ public class Unit : MonoBehaviour
 
    MOVEMENTSTATE movementState;
    SELECTIONSTATE selectionState;
-
+   
    Cell targetPoint;
    
    //EventHandler
@@ -256,7 +264,7 @@ public class Unit : MonoBehaviour
 
    void SelectUnit()
    {
-       if (Input.GetMouseButtonDown(0))
+       if (Input.GetMouseButtonUp(0))
        {
            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
            RaycastHit hit;
@@ -266,10 +274,16 @@ public class Unit : MonoBehaviour
                {
                     Unit unitSelected = hit.transform.GetComponent<Unit>();
                     unitSelected.selectionState = SELECTIONSTATE.Selected;
+                    Debug.Log("Unit Selected");
+               }
+               else if (hit.transform.CompareTag("EnemyUnit"))
+               {
+                   Debug.Log("Enemy Selected");
                }
            }
        }
    }
+   
 
    void DeselectUnit()
    {
@@ -518,34 +532,27 @@ public class Unit : MonoBehaviour
         }
     }
 
-    void CheckDistanceToTarget()
+    int CheckDistanceToTarget()
     {
-        if (Input.GetMouseButtonUp(1))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
                 Vector3 unitPosition = this.transform.position;
                 Vector3 targetPosition = hit.transform.position;           
                 
-                int attackingUnit = tgs.CellGetIndex(tgs.CellGetAtPosition(unitPosition, true));
-                int defendingUnit = tgs.CellGetIndex(tgs.CellGetAtPosition(targetPosition, true));
-                int distanceToTarget = tgs.CellGetHexagonDistance(attackingUnit, defendingUnit);
-                Debug.Log(distanceToTarget);
+                attackingUnit = tgs.CellGetIndex(tgs.CellGetAtPosition(unitPosition, true));
+                defendingUnit = tgs.CellGetIndex(tgs.CellGetAtPosition(targetPosition, true));
+                distanceToUnit = tgs.CellGetHexagonDistance(attackingUnit, defendingUnit);
+                Debug.Log(distanceToUnit);
+                return distanceToUnit;
             }
-        }
-    }
-
-    //TODO: Not working
-    public virtual bool IsUnitAttackable(Unit other, int sourceCell)
-    {
-        return IsUnitAttackable(other, other.Cell, sourceCell);
+            return 0;
     }
     
-    public virtual bool IsUnitAttackable(Unit target, int targetCell, int sourceCell)
+    public virtual bool IsUnitAttackable(Unit target)
     {
-        return GridManager.Instance.GetDistance(sourceCell, targetCell) <= AttackRange
+        return CheckDistanceToTarget() <= AttackRange
                && target.PlayerNumber != PlayerNumber
                && ActionPoints >= 1;
     }

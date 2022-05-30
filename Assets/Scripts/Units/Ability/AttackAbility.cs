@@ -20,7 +20,7 @@ public class AttackAbility: Ability
 
     public override IEnumerator Act(GameManager gameManager)
     {
-        if (UnitReference.IsUnitAttackable(UnitToAttack, GridManager.Instance.GetLastClickedPosition(), GridManager.Instance.GetUnitPosition()))
+        if (UnitReference.IsUnitAttackable(UnitToAttack))
         {
             UnitReference.AttackHandler(UnitToAttack);
             yield return new WaitForSeconds(0.5f);
@@ -32,14 +32,14 @@ public class AttackAbility: Ability
     {
         var unit = GetComponent<Unit>();
         var enemyUnits = gameManager.GetEnemyUnits(gameManager.CurrentPlayer);
-        inAttackRange = enemyUnits.Where(u => UnitReference.IsUnitAttackable(u, GridManager.Instance.GetLastClickedPosition() ,GridManager.Instance.GetUnitPosition())).ToList();
+        //inAttackRange = enemyUnits.Where(u => UnitReference.IsUnitAttackable(u, GridManager.Instance.GetLastClickedPosition() ,GridManager.Instance.GetUnitPosition())).ToList();
         inAttackRange.ForEach(u=>u.MarkAsReachableEnemy());
     }
 
     //generally ok, if part not working
     public override void OnUnitClicked(Unit unit, GameManager gameManager)
     {
-        if (unit.IsUnitAttackable(unit, UnitReference.Cell))
+        if (unit.IsUnitAttackable(unit))
         {
             UnitToAttack = unit;
             Debug.Log("TestAttack");
