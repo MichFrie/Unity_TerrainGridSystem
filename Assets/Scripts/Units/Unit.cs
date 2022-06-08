@@ -5,7 +5,7 @@ using TGS;
 using UnityEditor;
 
 //BaseClass
-public class Unit : MonoBehaviour
+public class Unit : MonoBehaviour, CommandManager.ICommand
 { 
     //PlayerNumber
     public int PlayerNumber;
@@ -171,7 +171,6 @@ public class Unit : MonoBehaviour
        if ((Input.GetKeyDown(KeyCode.I)))
        { 
            ShowCellSide();
-           OnUnitSelected();
        }
 
        if (Input.GetKeyDown(KeyCode.T))
@@ -211,6 +210,7 @@ public class Unit : MonoBehaviour
                 if (Input.GetMouseButtonUp(0))
                 {
                     int targetCell = tgs.cellHighlightedIndex;
+                    
                     Cell = targetCell;
                     if (targetCell != -1)
                     {
@@ -239,6 +239,7 @@ public class Unit : MonoBehaviour
                         tgs.CellSetTag(startCell, cellEmpty);
                         tgs.CellSetTag(targetCell, cellOccupied);
                          GridManager.Instance.UpdateOccupiedCellsList(startCell, cellEmpty, targetCell, cellOccupied);
+                         SaveMovement(targetCell);
                     }
                     else
                     {
@@ -582,9 +583,10 @@ public class Unit : MonoBehaviour
         }
     }
 
+    //TODO:state not set to instance of an object
     public void SetState(UnitState state)
      {
-         UnitState.MakeTransition(state);
+         //UnitState.MakeTransition(state);
          Debug.Log(string.Format("{0} - {1}", gameObject, UnitState));
      }
     
@@ -745,7 +747,16 @@ public class Unit : MonoBehaviour
         //     UnitHighlighterAggregator.MarkAsFriendlyFn?.ForEach(o => o.Apply(this, null));
         // }
     }
-    
-    
+
+
+    public void SaveMovement(int lastCell)
+    {
+        CommandManager.Instance.AddCell(lastCell);
+    }
+
+    public void UndoMovement()
+    {
+        //
+    }
 }
 

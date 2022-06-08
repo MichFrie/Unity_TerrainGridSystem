@@ -36,7 +36,7 @@ public class AttackAbility: Ability
         inAttackRange.ForEach(u=>u.MarkAsReachableEnemy());
     }
 
-    //generally ok, if part not working
+    //TODO:generally ok, if part not working
     public override void OnUnitClicked(Unit unit, GameManager gameManager)
     {
         if (unit.IsUnitAttackable(unit))
@@ -45,5 +45,13 @@ public class AttackAbility: Ability
             Debug.Log("TestAttack");
         }
         Debug.Log("AttackAbility");
+    }
+
+    public override bool CanPerform(GameManager gameManager)
+    {
+        var enemyUnits = gameManager.GetEnemyUnits(gameManager.CurrentPlayer);
+        inAttackRange = enemyUnits.Where(u => UnitReference.IsUnitAttackable(u)).ToList();
+
+        return UnitReference.ActionPoints > 0 && inAttackRange.Count > 0;
     }
 }

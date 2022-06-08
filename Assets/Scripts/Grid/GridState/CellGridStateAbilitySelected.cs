@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Unity.VisualScripting.FullSerializer;
+using System.Linq;
 using UnityEngine;
 
 public class CellGridStateAbilitySelected : CellGridState
@@ -18,10 +18,34 @@ public class CellGridStateAbilitySelected : CellGridState
         _abilities = abilities;
         _unit = unit;
     }
-
+    public CellGridStateAbilitySelected(GameManager gameManager, Unit unit, Ability ability) : this(gameManager, unit, new List<Ability>() { ability }) {}
     //ok
     public override void OnUnitClicked(Unit unit)
     {
         _abilities.ForEach(a => a.OnUnitClicked(unit, gameManager));
+        Debug.Log("CellGridStateAbilitySelected");
     }
+
+    //TODO:function gets called, but unit is null???
+    public override void OnStateEnter()
+    {
+        _unit?.OnUnitSelected();
+        
+        _abilities.ForEach(a => a.OnAbilitySelected(gameManager));
+        _abilities.ForEach(a=>a.Display(gameManager));
+
+        
+        var canPerformAction = _abilities.Select(a=>a.CanPerform(gameManager)).DefaultIfEmpty().Aggregate((result, next) => result || next);
+
+        if (!canPerformAction)
+        {
+            _unit?.SetState(new UnitStateMarkedAsFinished(_unit));
+            
+        }
+        else
+        {
+            _unit?.SetState(new UnitStateNormal(_unit));
+        }
+    }
+
 }

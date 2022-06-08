@@ -14,6 +14,7 @@ public class CellGridStateWaitingForInput : CellGridState
     {
         if (gameManager.GetCurrentPlayerUnits().Contains(unit))
         {
+            Debug.Log("CellGridStateWaitingForInput");
             gameManager.CellGridState = new CellGridStateAbilitySelected(gameManager, unit, unit.GetComponents<Ability>().ToList());
         }
     }

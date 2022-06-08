@@ -46,4 +46,6 @@ public class Ability : MonoBehaviour
     public virtual void OnTurnEnd(GameManager gameManager) { }
     public virtual void OnTurnStart(GameManager gameManager) { }
     public virtual void OnUnitClicked(Unit unit, GameManager gameManager) { }
+    public virtual void OnAbilitySelected(GameManager gameManager) { }
+    public virtual bool CanPerform(GameManager gameManager) { return false; }
 }
